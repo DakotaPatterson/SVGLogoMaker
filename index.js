@@ -1,6 +1,9 @@
 //Include packages needed for this application
 const inquirer = require('inquirer');
 const fs = require('fs');
+const Circle = require('./lib/circle');
+const Square = require('./lib/square');
+const Triangle = require('./lib/triangle');
 
 //Create an array of questions for user input
 
@@ -36,7 +39,7 @@ const questions = [
     {
         type: 'list',
         message: 'What shape would you like the logo to be?',
-        name: 'license',
+        name: 'shapeType',
         choices: ['Square', 'Circle','Triangle'],
     },
     {
@@ -53,15 +56,36 @@ const questions = [
 ];
 
 //Create a function to initialize app
-function init() {
-    inquirer.prompt(questions)
+const generateSVG = (answers) => {
+
+    let shape;
+    switch (answers.shapeType.toLowerCase()) {
+        case 'square':
+            shape = new Square(answers.shapeColor, answers.text);
+            break;
+        case 'circle':
+            shape = new Circle(answers.shapeColor, answers.text);
+            break;
+        case 'triangle':
+            shape = new Triangle(answers.shapeColor, answers.text);
+            break;
+        default:
+            console.error("Invalid shape type.");
+            return;
+    }
+
+ const svgContent = shape.generateSVG();
+    fs.writeFileSync('logo.svg', svgContent);
+    console.log("Generated logo.svg");
+};
+
+inquirer.prompt(questions)
     .then((answers) => {
-        
+        generateSVG(answers);
     })
     .catch((error) => {
         console.error("Error:", error);
     });
-}
 
 // Function call to initialize app
-init();
+generateSVG();
