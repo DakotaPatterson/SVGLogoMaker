@@ -1,6 +1,7 @@
 //Include packages needed for this application
 const inquirer = require('inquirer');
 const fs = require('fs');
+const Shape = require('./lib/shapes');
 const Circle = require('./lib/circle');
 const Square = require('./lib/square');
 const Triangle = require('./lib/triangle');
@@ -59,22 +60,23 @@ const questions = [
 const generateSVG = (answers) => {
 
     let shape;
-    switch (answers.shapeType.toLowerCase()) {
-        case 'square':
-            shape = new Square(answers.shapeColor, answers.text);
-            break;
-        case 'circle':
-            shape = new Circle(answers.shapeColor, answers.text);
-            break;
-        case 'triangle':
-            shape = new Triangle(answers.shapeColor, answers.text);
-            break;
-        default:
-            console.error("Invalid shape type.");
-            return;
-    }
+// Create instance based on the selected shape type
+switch (answers.shapeType.toLowerCase()) {
+    case 'square':
+        shape = new Square(answers.text, answers.textColor, answers.shapeColor);
+        break;
+    case 'circle':
+        shape = new Circle(answers.text, answers.textColor, answers.shapeColor);
+        break;
+    case 'triangle':
+        shape = new Triangle(answers.text, answers.textColor, answers.shapeColor);
+        break;
+    default:
+        console.error("Invalid shape type.");
+        return;
+}
 
- const svgContent = shape.generateSVG();
+ const svgContent = shape.render();
     fs.writeFileSync('logo.svg', svgContent);
     console.log("Generated logo.svg");
 };
@@ -86,6 +88,3 @@ inquirer.prompt(questions)
     .catch((error) => {
         console.error("Error:", error);
     });
-
-// Function call to initialize app
-generateSVG();
